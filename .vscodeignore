@@ -1,0 +1,15 @@
+.vscode/**
+.vscode-test/**
+src/**
+.gitignore
+.editorconfig
+.yo-rc.json
+tsconfig.json
+**/*.map
+**/*.ts
+node_modules
+screenshots
+README.md
+*.vsix
+
+

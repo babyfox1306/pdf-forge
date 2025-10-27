@@ -1,0 +1,259 @@
+{
+  "name": "pdf-forge",
+  "displayName": "PDF Forge",
+  "description": "All-in-one PDF toolkit for developers: view, extract code & tables, convert to Markdown, highlight, note, compare — 100% offline, no AI, one .vsix forever.",
+  "version": "1.0.0",
+  "publisher": "babyfox1306",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/babyfox1306/pdf-forge.git"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other",
+    "Formatters",
+    "Visualization",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "pdf",
+    "pdf viewer",
+    "pdf extract",
+    "pdf to markdown",
+    "code from pdf",
+    "pdf ocr",
+    "pdf table csv",
+    "pdf compare",
+    "pdf notes",
+    "offline pdf"
+  ],
+  "activationEvents": [
+    "onCustomEditor:pdf-forge.pdfEditor"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "pdf-forge.pdfEditor",
+        "displayName": "PDF Forge Viewer",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.pdf"
+          }
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "command": "pdf-forge.openPdf",
+        "title": "PDF Forge: Open PDF"
+      },
+      {
+        "command": "pdf-forge.extractText",
+        "title": "PDF Forge: Extract All Text"
+      },
+      {
+        "command": "pdf-forge.exportMarkdown",
+        "title": "PDF Forge: Export to Markdown"
+      },
+      {
+        "command": "pdf-forge.copyCode",
+        "title": "PDF Forge: Copy All Code"
+      },
+      {
+        "command": "pdf-forge.exportNotes",
+        "title": "PDF Forge: Export Notes"
+      },
+      {
+        "command": "pdf-forge.comparePdfs",
+        "title": "PDF Forge: Compare PDFs"
+      },
+      {
+        "command": "pdf-forge.toggleOcr",
+        "title": "PDF Forge: Toggle OCR"
+      },
+      {
+        "command": "pdf-forge.clearCache",
+        "title": "PDF Forge: Clear Cache"
+      },
+      {
+        "command": "pdf-forge.openExportFolder",
+        "title": "PDF Forge: Open Export Folder"
+      },
+      {
+        "command": "pdf-forge.extractTables",
+        "title": "PDF Forge: Extract Tables"
+      },
+      {
+        "command": "pdf-forge.deduplicateCode",
+        "title": "PDF Forge: Deduplicate Code"
+      },
+      {
+        "command": "pdf-forge.toggleSplitView",
+        "title": "PDF Forge: Toggle Split View"
+      },
+      {
+        "command": "pdf-forge.jumpToPage",
+        "title": "PDF Forge: Jump to Page"
+      },
+      {
+        "command": "pdf-forge.searchInPdf",
+        "title": "PDF Forge: Search in PDF"
+      },
+      {
+        "command": "pdf-forge.showMetadata",
+        "title": "PDF Forge: Show Metadata"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "pdf-forge.zoom",
+        "key": "ctrl+alt+z",
+        "when": "activeEditor == pdf-forge.pdfEditor"
+      },
+      {
+        "command": "pdf-forge.extractText",
+        "key": "ctrl+alt+x",
+        "when": "activeEditor == pdf-forge.pdfEditor"
+      },
+      {
+        "command": "pdf-forge.copyCode",
+        "key": "ctrl+alt+c",
+        "when": "activeEditor == pdf-forge.pdfEditor"
+      },
+      {
+        "command": "pdf-forge.exportMarkdown",
+        "key": "ctrl+alt+e",
+        "when": "activeEditor == pdf-forge.pdfEditor"
+      },
+      {
+        "command": "pdf-forge.toggleSplitView",
+        "key": "ctrl+alt+s",
+        "when": "activeEditor == pdf-forge.pdfEditor"
+      },
+      {
+        "command": "pdf-forge.searchInPdf",
+        "key": "ctrl+alt+f",
+        "when": "activeEditor == pdf-forge.pdfEditor"
+      }
+    ],
+    "configuration": {
+      "title": "PDF Forge",
+      "properties": {
+        "pdf-forge.autoReload": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically reload PDF when file changes on disk"
+        },
+        "pdf-forge.defaultFormat": {
+          "type": "string",
+          "enum": [
+            "markdown",
+            "text",
+            "json"
+          ],
+          "default": "markdown",
+          "description": "Default export format for text extraction"
+        },
+        "pdf-forge.highlightColor": {
+          "type": "string",
+          "default": "#FFEB3B",
+          "description": "Default highlight color (hex format)"
+        },
+        "pdf-forge.maxFileSize": {
+          "type": "number",
+          "default": 200,
+          "description": "Maximum file size in MB (0 = unlimited)"
+        },
+        "pdf-forge.enableOcr": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable OCR for scanned PDFs (uses Tesseract.js)"
+        },
+        "pdf-forge.autoDedupe": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically deduplicate code blocks during extraction"
+        }
+      }
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "pdf-forge.openPdf"
+        },
+        {
+          "command": "pdf-forge.extractText"
+        },
+        {
+          "command": "pdf-forge.exportMarkdown"
+        },
+        {
+          "command": "pdf-forge.copyCode"
+        },
+        {
+          "command": "pdf-forge.exportNotes"
+        },
+        {
+          "command": "pdf-forge.comparePdfs"
+        },
+        {
+          "command": "pdf-forge.toggleOcr"
+        },
+        {
+          "command": "pdf-forge.clearCache"
+        },
+        {
+          "command": "pdf-forge.openExportFolder"
+        },
+        {
+          "command": "pdf-forge.extractTables"
+        },
+        {
+          "command": "pdf-forge.deduplicateCode"
+        },
+        {
+          "command": "pdf-forge.toggleSplitView"
+        },
+        {
+          "command": "pdf-forge.jumpToPage"
+        },
+        {
+          "command": "pdf-forge.searchInPdf"
+        },
+        {
+          "command": "pdf-forge.showMetadata"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package",
+    "publish": "vsce publish",
+    "publish:open": "ovsx publish"
+  },
+  "dependencies": {
+    "diff-match-patch": "^1.0.5",
+    "highlight.js": "^11.9.0",
+    "md-to-pdf": "^5.2.3",
+    "pdf-lib": "^1.17.1",
+    "pdf-parse": "^1.1.1",
+    "pdfjs-dist": "^5.4.296",
+    "simple-git": "^3.20.0",
+    "tesseract.js": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/diff-match-patch": "^1.0.36",
+    "@types/node": "^20.10.0",
+    "@types/pdf-parse": "^1.1.5",
+    "@types/vscode": "^1.80.0",
+    "@vscode/vsce": "^2.22.0",
+    "typescript": "^5.3.3"
+  }
+}

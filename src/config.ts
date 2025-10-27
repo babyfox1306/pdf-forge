@@ -1,0 +1,56 @@
+import * as vscode from 'vscode';
+
+export class Config {
+    private context: vscode.ExtensionContext;
+
+    constructor(context: vscode.ExtensionContext) {
+        this.context = context;
+    }
+
+    get autoReload(): boolean {
+        return vscode.workspace.getConfiguration('pdf-forge').get('autoReload', true);
+    }
+
+    get defaultFormat(): 'markdown' | 'text' | 'json' {
+        return vscode.workspace.getConfiguration('pdf-forge').get('defaultFormat', 'markdown');
+    }
+
+    get highlightColor(): string {
+        return vscode.workspace.getConfiguration('pdf-forge').get('highlightColor', '#FFEB3B');
+    }
+
+    get maxFileSize(): number {
+        return vscode.workspace.getConfiguration('pdf-forge').get('maxFileSize', 200);
+    }
+
+    get enableOcr(): boolean {
+        return vscode.workspace.getConfiguration('pdf-forge').get('enableOcr', false);
+    }
+
+    get autoDedupe(): boolean {
+        return vscode.workspace.getConfiguration('pdf-forge').get('autoDedupe', true);
+    }
+
+    toggleOcr(): void {
+        const current = this.enableOcr;
+        vscode.workspace.getConfiguration('pdf-forge').update('enableOcr', !current, true);
+        vscode.window.showInformationMessage(`OCR ${!current ? 'enabled' : 'disabled'}`);
+    }
+
+    clearCache(): void {
+        // Clear all cached data
+        this.context.workspaceState.update('pdf-cache', undefined);
+        this.context.workspaceState.update('search-history', undefined);
+        vscode.window.showInformationMessage('PDF Forge cache cleared');
+    }
+
+    async getSearchHistory(): Promise<string[]> {
+        return this.context.workspaceState.get('search-history', []);
+    }
+
+    async saveSearchHistory(queries: string[]): Promise<void> {
+        await this.context.workspaceState.update('search-history', queries);
+    }
+}
+
+

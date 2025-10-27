@@ -1,0 +1,9 @@
+# VS Code Extension
+out
+node_modules
+*.vsix
+*.vsix.zip
+.vscode-test
+
+# Development
+.cursor/

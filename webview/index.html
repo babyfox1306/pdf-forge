@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Forge</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="toolbar">
+        <div class="toolbar-left">
+            <button id="btn-zoom-out" title="Zoom Out">-</button>
+            <span id="zoom-level">100%</span>
+            <button id="btn-zoom-in" title="Zoom In">+</button>
+            <button id="btn-fit-page" title="Fit Page">Fit</button>
+            <button id="btn-fit-width" title="Fit Width">Width</button>
+        </div>
+        <div class="toolbar-center">
+            <input type="text" id="search-input" placeholder="Search (Ctrl+F)">
+            <button id="btn-search" title="Search">🔍</button>
+            <button id="btn-prev-page" title="Previous Page">⬅</button>
+            <span id="page-info">Page 1 / 1</span>
+            <button id="btn-next-page" title="Next Page">➡</button>
+        </div>
+        <div class="toolbar-right">
+            <button id="btn-extract" title="Extract">Extract</button>
+            <button id="btn-export" title="Export">Export</button>
+            <button id="btn-settings" title="Settings">⚙</button>
+        </div>
+    </div>
+    <div id="container">
+        <div id="sidebar">
+            <div id="sidebar-tabs">
+                <button class="tab-btn active" data-tab="info">Info</button>
+                <button class="tab-btn" data-tab="notes">Notes</button>
+                <button class="tab-btn" data-tab="exports">Exports</button>
+                <button class="tab-btn" data-tab="bookmarks">Bookmarks</button>
+            </div>
+            <div id="sidebar-content">
+                <div id="tab-info" class="tab-pane active">
+                    <h3>PDF Information</h3>
+                    <div id="metadata"></div>
+                </div>
+                <div id="tab-notes" class="tab-pane">
+                    <h3>Notes</h3>
+                    <div id="notes-list"></div>
+                </div>
+                <div id="tab-exports" class="tab-pane">
+                    <h3>Exports</h3>
+                    <div id="exports-list"></div>
+                </div>
+                <div id="tab-bookmarks" class="tab-pane">
+                    <h3>Bookmarks</h3>
+                    <div id="bookmarks-list"></div>
+                </div>
+            </div>
+        </div>
+        <div id="viewer">
+            <div id="pdf-container"></div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.1.392/pdf.min.js"></script>
+    <script src="viewer.js"></script>
+</body>
+</html>
+
