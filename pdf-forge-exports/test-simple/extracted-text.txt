@@ -1,5 +1,3 @@
-
-
 PDF Forge Test Document
 This is a simple test PDF for PDF Forge extension.
 
