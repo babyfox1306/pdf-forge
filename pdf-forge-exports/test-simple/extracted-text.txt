@@ -1,0 +1,41 @@
+
+
+PDF Forge Test Document
+This is a simple test PDF for PDF Forge extension.
+
+Features to test:
+1. PDF Viewer - Should display this document correctly
+2. Text Extraction - Extract all text from PDF
+3. Markdown Export - Convert to Markdown format
+4. Code Extraction - Extract code blocks
+5. Table Extraction - Extract tables to CSV/JSON
+
+Sample Code Block:
+function hello() {
+    console.log("Hello from PDF Forge!");
+    return true;
+}
+
+Sample Table Data:
+Name        Age    City
+John        25     New York
+Jane        30     London
+Bob         28     Tokyo
+Alice       22     Paris
+
+This is a simple PDF with basic text content.
+No complex formatting or compression.
+
+Page 2 - Additional Content
+This is the second page of the test PDF.
+
+More sample text for testing:
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+
+Another code example:
+const x = 10;
+const y = 20;
+const sum = x + y;
+
+End of test document.
