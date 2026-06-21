@@ -2,10 +2,14 @@ import * as vscode from 'vscode';
 import { PdfViewerProvider } from './pdfViewer';
 import { ExportManager } from './exportManager';
 import { Config } from './config';
+import { initPdfForgeLog, logError, logInfo } from './log';
 
 export function activate(context: vscode.ExtensionContext) {
+    initPdfForgeLog(context);
+    logInfo('PDF Forge activating');
+
     const config = new Config(context);
-    const exportManager = new ExportManager(context);
+    const exportManager = new ExportManager(context, config);
 
     // Register custom editor provider
     const provider = new PdfViewerProvider(context, config, exportManager);
@@ -24,7 +28,6 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('pdf-forge.copyCode', () => exportManager.copyAllCode()),
         vscode.commands.registerCommand('pdf-forge.exportNotes', () => exportManager.exportNotes()),
         vscode.commands.registerCommand('pdf-forge.comparePdfs', () => exportManager.comparePdfs()),
-        vscode.commands.registerCommand('pdf-forge.toggleOcr', () => config.toggleOcr()),
         vscode.commands.registerCommand('pdf-forge.clearCache', () => config.clearCache()),
         vscode.commands.registerCommand('pdf-forge.openExportFolder', () => exportManager.openExportFolder()),
         vscode.commands.registerCommand('pdf-forge.extractTables', () => exportManager.extractTables()),
@@ -38,20 +41,25 @@ export function activate(context: vscode.ExtensionContext) {
 
     commands.forEach(cmd => context.subscriptions.push(cmd));
 
+    logInfo('PDF Forge activated');
     vscode.window.showInformationMessage('PDF Forge activated!');
 }
 
-function openPdfCommand() {
-    vscode.window.showOpenDialog({
-        filters: {
-            'PDF Files': ['pdf']
-        },
-        canSelectMany: false
-    }).then(uris => {
+async function openPdfCommand() {
+    try {
+        const uris = await vscode.window.showOpenDialog({
+            filters: {
+                'PDF Files': ['pdf']
+            },
+            canSelectMany: false
+        });
         if (uris && uris[0]) {
-            vscode.commands.executeCommand('vscode.openWith', uris[0], 'pdf-forge.pdfEditor');
+            logInfo(`Opening PDF: ${uris[0].fsPath}`);
+            await vscode.commands.executeCommand('vscode.openWith', uris[0], 'pdf-forge.pdfEditor');
         }
-    });
+    } catch (error: any) {
+        logError(`Failed to open PDF: ${error?.message || error}`);
+    }
 }
 
 export function deactivate() {}

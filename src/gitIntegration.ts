@@ -1,11 +1,25 @@
 import * as vscode from 'vscode';
-import simpleGit, { SimpleGit } from 'simple-git';
 import * as path from 'path';
 
+let simpleGit: any;
+let SimpleGit: any;
+
+// Try to load simple-git, but make it optional
+try {
+    const simpleGitModule = require('simple-git');
+    simpleGit = simpleGitModule.default || simpleGitModule;
+    SimpleGit = simpleGitModule.SimpleGit;
+} catch (error) {
+    console.warn('[PDF Forge] simple-git not available, git features disabled');
+}
+
 export class GitIntegration {
-    private git: SimpleGit;
+    private git: any;
 
     constructor(workspacePath: string) {
+        if (!simpleGit) {
+            throw new Error('simple-git is not available');
+        }
         this.git = simpleGit(workspacePath);
     }
 

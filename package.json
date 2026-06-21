@@ -2,7 +2,7 @@
   "name": "pdf-forge",
   "displayName": "PDF Forge",
   "description": "All-in-one PDF toolkit for developers: view, extract code & tables, convert to Markdown, highlight, note, compare — 100% offline, no AI, one .vsix forever.",
-  "version": "1.0.0",
+  "version": "1.0.8",
   "publisher": "babyfox1306",
   "repository": {
     "type": "git",
@@ -23,7 +23,6 @@
     "pdf extract",
     "pdf to markdown",
     "code from pdf",
-    "pdf ocr",
     "pdf table csv",
     "pdf compare",
     "pdf notes",
@@ -70,10 +69,6 @@
       {
         "command": "pdf-forge.comparePdfs",
         "title": "PDF Forge: Compare PDFs"
-      },
-      {
-        "command": "pdf-forge.toggleOcr",
-        "title": "PDF Forge: Toggle OCR"
       },
       {
         "command": "pdf-forge.clearCache",
@@ -171,7 +166,7 @@
         "pdf-forge.enableOcr": {
           "type": "boolean",
           "default": false,
-          "description": "Enable OCR for scanned PDFs (uses Tesseract.js)"
+          "description": "Reserved for a future release. OCR is not active in this version."
         },
         "pdf-forge.autoDedupe": {
           "type": "boolean",
@@ -201,9 +196,6 @@
           "command": "pdf-forge.comparePdfs"
         },
         {
-          "command": "pdf-forge.toggleOcr"
-        },
-        {
           "command": "pdf-forge.clearCache"
         },
         {
@@ -231,22 +223,23 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run copy-pdfjs && npm run compile",
+    "copy-pdfjs": "node scripts/copy-pdfjs.js",
+    "postinstall": "node scripts/copy-pdfjs.js",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "package": "vsce package",
     "publish": "vsce publish",
-    "publish:open": "ovsx publish"
+    "publish:open": "ovsx publish",
+    "publish:both": "npm run publish && npm run publish:open"
   },
+  "icon": "icon.png",
   "dependencies": {
     "diff-match-patch": "^1.0.5",
     "highlight.js": "^11.9.0",
-    "md-to-pdf": "^5.2.3",
-    "pdf-lib": "^1.17.1",
     "pdf-parse": "^1.1.1",
-    "pdfjs-dist": "^5.4.296",
-    "simple-git": "^3.20.0",
-    "tesseract.js": "^5.0.2"
+    "pdfjs-dist": "^4.1.392",
+    "simple-git": "^3.20.0"
   },
   "devDependencies": {
     "@types/diff-match-patch": "^1.0.36",
@@ -254,6 +247,7 @@
     "@types/pdf-parse": "^1.1.5",
     "@types/vscode": "^1.80.0",
     "@vscode/vsce": "^2.22.0",
+    "tesseract.js": "^5.0.2",
     "typescript": "^5.3.3"
   }
 }

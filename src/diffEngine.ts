@@ -1,5 +1,4 @@
 import DiffMatchPatch from 'diff-match-patch';
-import pdf from 'pdf-parse';
 import { TextExtractor } from './textExtractor';
 
 export class DiffEngine {
@@ -84,8 +83,10 @@ export class DiffEngine {
     }
 
     async getPageDiff(pdf1Buffer: Buffer, pdf2Buffer: Buffer): Promise<PageDiff> {
-        const pdf1 = await pdf(pdf1Buffer);
-        const pdf2 = await pdf(pdf2Buffer);
+        // Lazy-load pdf-parse to avoid DOMMatrix errors
+        const pdfParse = require('pdf-parse');
+        const pdf1 = await pdfParse(pdf1Buffer);
+        const pdf2 = await pdfParse(pdf2Buffer);
 
         return {
             pagesAdded: Math.max(0, pdf2.numpages - pdf1.numpages),

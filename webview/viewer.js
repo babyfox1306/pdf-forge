@@ -4,8 +4,8 @@ let pdfDoc = null;
 let currentPage = 1;
 let currentScale = 1.0;
 
-// Initialize PDF.js
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.1.392/pdf.worker.min.js';
+// Worker loaded from bundled media/pdfjs/ (see pdfViewer.ts for active webview)
+pdfjsLib.GlobalWorkerOptions.workerSrc = '../media/pdfjs/pdf.worker.min.mjs';
 
 // Toolbar controls
 document.getElementById('btn-zoom-in').addEventListener('click', () => setZoom(1.1));

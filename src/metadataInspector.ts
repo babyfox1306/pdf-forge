@@ -1,7 +1,7 @@
-import pdf from 'pdf-parse';
-
 export class MetadataInspector {
     async inspect(buffer: Buffer): Promise<PDFMetadata> {
+        // Lazy-load pdf-parse to avoid DOMMatrix errors
+        const pdf = require('pdf-parse');
         const data = await pdf(buffer);
 
         return {

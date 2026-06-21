@@ -1,5 +1,3 @@
-import * as vscode from 'vscode';
-import * as fs from 'fs';
 import * as path from 'path';
 import { TextExtractor } from './textExtractor';
 import { CodeIntelligence } from './codeIntelligence';
@@ -66,12 +64,6 @@ export class ConversionEngine {
 
     async convertToPlainText(buffer: Buffer): Promise<string> {
         return await this.textExtractor.extractFromBuffer(buffer);
-    }
-
-    async convertMarkdownToPdf(markdownPath: string): Promise<string> {
-        // This will use md-to-pdf library
-        // For now, return placeholder
-        return path.join(path.dirname(markdownPath), path.basename(markdownPath, '.md') + '.pdf');
     }
 }
 

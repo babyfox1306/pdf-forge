@@ -7,3 +7,21 @@ node_modules
 
 # Development
 .cursor/
+pdf-forge-exports/
+.vsix-analysis/
+.vsix-final-check/
+.vsix-trim-check/
+.vsix-unpack/
+.vsix-unpack.zip
+temp-*/
+t-extract/
+v5/
+*.zip
+test-*.pdf
+
+# Temporary documentation files
+FIX-*.md
+INSTALL-*.md
+DEBUG-*.md
+TEST-REPORT.md
+TEST-SUMMARY.txt
