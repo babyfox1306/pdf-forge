@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>[QA] Working with a PDF collection — PDF Forge</title>
+<style>
+:root { color-scheme: light dark; }
+body {
+  max-width: 42rem; margin: 0 auto; padding: 2.5rem 1.25rem 5rem;
+  font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 .4rem; }
+h2 { font-size: 1.15rem; margin: 2.4rem 0 .6rem; }
+.sub { opacity: .7; margin: 0 0 2rem; }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .875em; }
+pre {
+  padding: .85rem 1rem; overflow-x: auto; border-radius: 6px;
+  background: rgba(127,127,127,.12);
+}
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid rgba(127,127,127,.25); }
+th { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; opacity: .7; }
+.next { margin-top: 2.8rem; padding-top: 1.4rem; border-top: 1px solid rgba(127,127,127,.25); }
+.next .option { display: block; margin: .5rem 0; }
+footer { margin-top: 3.5rem; font-size: .85rem; opacity: .65; }
+a { color: inherit; }
+</style>
+<!-- NO ANALYTICS ON QA PAGES. Do not add a beacon here. -->
+</head>
+<body>
+
+<p style="padding:.7rem 1rem;margin:0 0 2rem;border-radius:6px;background:rgba(200,120,0,.15);font-size:.9rem"><strong>QA page.</strong> Test target only. Not linked publicly, carries no analytics, and is excluded from all measurement.</p>
+
+<h1>Working with a PDF collection</h1>
+<p class="sub">Practical notes for converting a folder of PDFs into a Markdown corpus your editor and coding agent can actually work with.</p>
+
+<p>You reached this page because a batch run crossed the monthly threshold. Nothing is broken — the files already converted are complete and usable. Below is how to work through a collection efficiently.</p>
+
+<h2>Convert by subtree, not all at once</h2>
+
+<p>Running the command on a workspace root scans everything beneath it. Running it on a subfolder scans only that subtree, and the index merges across runs rather than replacing itself:</p>
+
+<pre>docs/api/        → run 1
+docs/guides/     → run 2
+manuals/         → run 3</pre>
+
+<p>After all three runs, <code>pdf-forge-exports/INDEX.md</code> lists every document from every run. Removing a source under <code>docs/api/</code> and rescanning that subtree only affects entries under <code>docs/api/</code>; entries from <code>manuals/</code> stay untouched.</p>
+
+<p>Convert the subtree you actually reference first. Reference material an agent never reads costs you the same as material it reads daily.</p>
+
+<h2>Re-running is cheap</h2>
+
+<p>A file whose source has not changed is recorded as <code>unchanged</code>. It is not reconverted and does not count toward the monthly threshold. Only a new or modified source counts, and only once per revision.</p>
+
+<p>This means you can safely re-run the command on the same folder after adding a few PDFs. Only the new ones do work.</p>
+
+<h2>Read INDEX.md before trusting the corpus</h2>
+
+<p>Every row carries a status. The ones worth checking:</p>
+
+<table>
+<tr><th>Status</th><th>What it means</th></tr>
+<tr><td><code>converted</code></td><td>Full text extracted, Markdown written.</td></tr>
+<tr><td><code>low_text</code></td><td>Some text extracted, but far less than the page count suggests. Usually a mostly-image document. The Markdown carries a warning at the top.</td></tr>
+<tr><td><code>no_text</code></td><td>No usable text layer. No Markdown written. These need OCR elsewhere first.</td></tr>
+<tr><td><code>encrypted</code></td><td>Password-protected. Decrypt before converting.</td></tr>
+<tr><td><code>skipped_limit</code></td><td>Not converted this month because the batch threshold was reached. Retryable.</td></tr>
+<tr><td><code>conflict</code></td><td>You edited the generated Markdown by hand. Nothing was overwritten.</td></tr>
+</table>
+
+<p>A corpus with several <code>no_text</code> rows will silently mislead an agent — it will confidently answer from the documents it can see and never mention the ones it cannot. Check the index before pointing an agent at the folder.</p>
+
+<h2>Point the agent at the index, not the folder</h2>
+
+<p>Coding agents handle a single named entry point far better than a directory tree they have to explore. Referencing <code>pdf-forge-exports/INDEX.md</code> gives the agent the document list, page counts, and relative links in one read, and every generated file carries front matter identifying its source PDF:</p>
+
+<pre>---
+title: "Authentication: API Reference"
+source: "docs/api/authentication.pdf"
+pages: 42
+status: "converted"
+---</pre>
+
+<p>That <code>source</code> field is what lets an answer be traced back to a specific PDF rather than to an anonymous block of text.</p>
+
+<h2>Commit the corpus</h2>
+
+<p>Markdown diffs; PDFs do not. Committing <code>pdf-forge-exports/</code> means a change to a spec shows up as a readable diff in review instead of an opaque binary blob.</p>
+
+<p>Keep <code>.pdf-forge-manifest.json</code> alongside it. That file records which outputs were generated by the tool and which revision they came from. Without it, a clone on another machine cannot prove ownership of the existing output and will refuse to overwrite anything — which is the safe behaviour, but an inconvenient one.</p>
+
+<div class="next">
+<span class="option">Keeping Markdown exports in sync with changing PDFs →</span>
+<span class="option">Letting agents query the document collection →</span>
+</div>
+
+<footer>
+<p>PDF Forge does not upload documents or document text. If you choose to open this guide, your browser visits a public GitHub Pages page classified only as a standard or large document set.</p>
+</footer>
+
+</body>
+</html>

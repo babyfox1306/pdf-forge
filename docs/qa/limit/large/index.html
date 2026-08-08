@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>[QA] Working with a large PDF collection — PDF Forge</title>
+<style>
+:root { color-scheme: light dark; }
+body {
+  max-width: 42rem; margin: 0 auto; padding: 2.5rem 1.25rem 5rem;
+  font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 .4rem; }
+h2 { font-size: 1.15rem; margin: 2.4rem 0 .6rem; }
+.sub { opacity: .7; margin: 0 0 2rem; }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .875em; }
+pre {
+  padding: .85rem 1rem; overflow-x: auto; border-radius: 6px;
+  background: rgba(127,127,127,.12);
+}
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid rgba(127,127,127,.25); }
+th { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; opacity: .7; }
+.next { margin-top: 2.8rem; padding-top: 1.4rem; border-top: 1px solid rgba(127,127,127,.25); }
+.next .option { display: block; margin: .5rem 0; }
+footer { margin-top: 3.5rem; font-size: .85rem; opacity: .65; }
+a { color: inherit; }
+</style>
+<!-- NO ANALYTICS ON QA PAGES. Do not add a beacon here. -->
+</head>
+<body>
+
+<p style="padding:.7rem 1rem;margin:0 0 2rem;border-radius:6px;background:rgba(200,120,0,.15);font-size:.9rem"><strong>QA page.</strong> Test target only. Not linked publicly, carries no analytics, and is excluded from all measurement.</p>
+
+<h1>Working with a large PDF collection</h1>
+<p class="sub">Notes for document sets big enough that conversion order and corpus hygiene start to matter.</p>
+
+<p>Your collection is large enough that converting it in one pass is not the right approach — and not only because of the monthly threshold. A few thousand pages of Markdown dumped into a repository will slow down search, bloat diffs, and give an agent more surface than it can use well. Below is how to work through it deliberately.</p>
+
+<h2>Split by how the documents are used, not by size</h2>
+
+<p>The instinct is to convert the biggest documents first. That is usually backwards. A 400-page hardware datasheet you consult twice a year is worth less as repository context than a 30-page API spec you reference weekly.</p>
+
+<p>Order the subtrees by reference frequency:</p>
+
+<pre>docs/api/          → high, convert first
+docs/architecture/ → high
+docs/vendor/       → low, convert last or never
+archive/           → probably never</pre>
+
+<p>Run the command per subtree. The index merges across runs, so partial conversion is a normal state, not a broken one. Rescanning one subtree does not disturb entries recorded from another.</p>
+
+<h2>Audit for unusable documents early</h2>
+
+<p>In a large collection, some documents will have no usable text layer. This matters more than it sounds: an agent reading the corpus cannot tell the difference between a document that says nothing relevant and a document that failed to convert. It will answer confidently from what it can see.</p>
+
+<p>After the first subtree, open <code>pdf-forge-exports/INDEX.md</code> and scan the status column:</p>
+
+<table>
+<tr><th>Status</th><th>Action</th></tr>
+<tr><td><code>no_text</code></td><td>No Markdown was written. OCR elsewhere, then reconvert. Until then, treat the document as absent from the corpus.</td></tr>
+<tr><td><code>low_text</code></td><td>Markdown was written with a warning header, but extraction is likely partial. Spot-check before relying on it.</td></tr>
+<tr><td><code>encrypted</code></td><td>Decrypt first. These are silently missing otherwise.</td></tr>
+<tr><td><code>failed</code></td><td>Retryable on the next explicit run.</td></tr>
+</table>
+
+<p>Knowing what is <em>not</em> in the corpus is as important as knowing what is.</p>
+
+<h2>Unchanged files do not cost anything</h2>
+
+<p>Once a document is converted, re-running the command on its folder records it as <code>unchanged</code>: no reconversion, no threshold usage. Only a genuinely modified source counts, and only once per revision.</p>
+
+<p>So the working pattern for a large set is not one heroic run. It is a series of small runs over weeks, each one picking up whatever is new, with everything already converted staying put.</p>
+
+<h2>Hand-edited output is never overwritten</h2>
+
+<p>Editing a generated Markdown file by hand is a reasonable thing to do — fixing a mangled table, adding a note. If you do, the tool notices and will not overwrite your edit.</p>
+
+<p>If the source PDF later changes as well, the new conversion is written beside your file as <code>document.pdf-forge-new.md</code> and the row is marked <code>conflict</code>. Nothing is lost and nothing accumulates: a further change to the same source replaces that one candidate rather than creating a chain of files. Resolving it is a manual merge, on your terms.</p>
+
+<h2>Give the agent one entry point</h2>
+
+<p>With a large corpus this stops being a nicety. An agent pointed at a directory of a few hundred Markdown files will explore inefficiently and burn context. Pointed at <code>pdf-forge-exports/INDEX.md</code>, it gets the full document list, page counts, statuses, and relative links in a single read, and can then open only what it needs.</p>
+
+<p>Each generated file carries front matter naming the source PDF, so an answer stays traceable to a specific document:</p>
+
+<pre>---
+title: "Authentication: API Reference"
+source: "docs/api/authentication.pdf"
+pages: 42
+status: "converted"
+---</pre>
+
+<h2>Version-control the corpus with its manifest</h2>
+
+<p>Committing <code>pdf-forge-exports/</code> turns document changes into reviewable diffs. Keep <code>.pdf-forge-manifest.json</code> with it — that file is what records which outputs the tool generated and from which revision. It contains no document text and no secrets.</p>
+
+<p>If the corpus is cloned without the manifest, the new machine cannot prove it owns the existing output and will refuse to overwrite it. That is deliberate, but it makes the corpus effectively read-only until reconverted from scratch.</p>
+
+<div class="next">
+<span class="option">Keeping Markdown exports in sync with changing PDFs →</span>
+<span class="option">Letting agents query the document collection →</span>
+</div>
+
+<footer>
+<p>PDF Forge does not upload documents or document text. If you choose to open this guide, your browser visits a public GitHub Pages page classified only as a standard or large document set.</p>
+</footer>
+
+</body>
+</html>

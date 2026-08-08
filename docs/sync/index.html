@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Keeping exports in sync — PDF Forge</title>
+<style>
+:root { color-scheme: light dark; }
+body {
+  max-width: 42rem; margin: 0 auto; padding: 2.5rem 1.25rem 5rem;
+  font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 .4rem; }
+h2 { font-size: 1.15rem; margin: 2.4rem 0 .6rem; }
+.sub { opacity: .7; margin: 0 0 2rem; }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .875em; }
+pre {
+  padding: .85rem 1rem; overflow-x: auto; border-radius: 6px;
+  background: rgba(127,127,127,.12);
+}
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid rgba(127,127,127,.25); }
+th { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; opacity: .7; }
+footer { margin-top: 3.5rem; font-size: .85rem; opacity: .65; }
+a { color: inherit; }
+</style>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "ef36c0ea721c417bb72afb4ccd544be4"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+
+<h1>Keeping exports in sync with changing PDFs</h1>
+<p class="sub">What happens when a source document changes after you have already converted it.</p>
+
+<h2>Re-running is the sync mechanism</h2>
+
+<p>There is no separate update command. Running <em>Convert Folder to Markdown</em> on a folder you have already converted is the way to bring the corpus back into line with its sources.</p>
+
+<p>Each source is compared against what the manifest recorded:</p>
+
+<table>
+<tr><th>Situation</th><th>Result</th></tr>
+<tr><td>Source unchanged, output intact</td><td><code>unchanged</code> — no work, no threshold usage</td></tr>
+<tr><td>Source unchanged, output deleted</td><td>Regenerated, no threshold usage</td></tr>
+<tr><td>Source changed</td><td>Reconverted, counts once for that revision</td></tr>
+<tr><td>Source unchanged, output edited by hand</td><td><code>conflict</code> — your edit is left alone</td></tr>
+</table>
+
+<p>The practical consequence: re-running on a large folder where only two PDFs changed does work for two files. The rest are compared and skipped. There is no penalty for running it often.</p>
+
+<h2>Where a stale corpus actually bites</h2>
+
+<p>A Markdown corpus that has drifted from its sources is worse than no corpus, because the failure is silent. An agent reading last quarter's converted spec will answer from it with full confidence. Nothing in the output announces that the underlying PDF moved on.</p>
+
+<p>Two habits reduce that risk:</p>
+
+<p><strong>Reconvert when the source folder changes, not on a calendar.</strong> If PDFs arrive by drop or download rather than by commit, the arrival is the trigger. Waiting for a weekly ritual means a window where the corpus is quietly wrong.</p>
+
+<p><strong>Let the diff tell you.</strong> If <code>pdf-forge-exports/</code> is committed, a reconversion that changes nothing produces an empty diff, and one that changes something shows you exactly what moved. That is the cheapest staleness check available — and it is the reason Markdown in version control beats PDFs sitting in a folder.</p>
+
+<h2>When your edits and the source both change</h2>
+
+<p>If you have hand-edited a generated file and its source PDF then changes, the new conversion is written beside your file as <code>document.pdf-forge-new.md</code>, and the index marks the row <code>conflict</code>. Your version is untouched.</p>
+
+<p>Further changes to the same source replace that single candidate rather than piling up new files. Merging is manual and deliberate — the tool will not decide for you which version is correct.</p>
+
+<h2>Sequencing with a coding agent</h2>
+
+<p>If an agent is working against the corpus, reconvert before the session rather than during it. A file changing underneath a running agent produces the confusing case where two answers in the same conversation disagree and neither is wrong.</p>
+
+<footer>
+<p>PDF Forge does not upload documents or document text. This is a public GitHub Pages page; it receives no document data of any kind.</p>
+</footer>
+
+</body>
+</html>

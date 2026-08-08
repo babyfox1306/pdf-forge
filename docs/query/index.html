@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Querying the document collection — PDF Forge</title>
+<style>
+:root { color-scheme: light dark; }
+body {
+  max-width: 42rem; margin: 0 auto; padding: 2.5rem 1.25rem 5rem;
+  font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 .4rem; }
+h2 { font-size: 1.15rem; margin: 2.4rem 0 .6rem; }
+.sub { opacity: .7; margin: 0 0 2rem; }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .875em; }
+pre {
+  padding: .85rem 1rem; overflow-x: auto; border-radius: 6px;
+  background: rgba(127,127,127,.12);
+}
+footer { margin-top: 3.5rem; font-size: .85rem; opacity: .65; }
+a { color: inherit; }
+</style>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "ef36c0ea721c417bb72afb4ccd544be4"}'></script><!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+
+<h1>Querying the document collection</h1>
+<p class="sub">Getting a coding agent to use a converted corpus well, rather than wandering through it.</p>
+
+<h2>Give it the index, not the directory</h2>
+
+<p>A directory of Markdown files is a poor interface for an agent. It has to list, guess from filenames, open several, and discard most of what it reads. On a corpus of any size that burns context before the real question is answered.</p>
+
+<p><code>pdf-forge-exports/INDEX.md</code> is the entry point. One read gives the agent every document's title, source path, page count, status, and a relative link. It can then open exactly what it needs.</p>
+
+<p>In practice, referencing the index explicitly works better than hoping the agent finds it:</p>
+
+<pre>Read pdf-forge-exports/INDEX.md first to see which documents
+exist, then open only the ones relevant to the question.</pre>
+
+<h2>Plain search still does most of the work</h2>
+
+<p>Because the corpus is ordinary Markdown inside the repository, everything already built for code applies to it. Editor-wide search finds a term across every converted document. <code>git grep</code> works. <code>git log -p</code> on a converted file shows how a specification changed over time — something that is effectively impossible with the PDFs themselves.</p>
+
+<p>This is the part that is easy to overlook: the corpus does not need a special retrieval system to be queryable. It needs to be text, in the repo, with stable paths.</p>
+
+<h2>Provenance is what makes an answer checkable</h2>
+
+<p>Every generated file opens with front matter naming its source:</p>
+
+<pre>---
+title: "Authentication: API Reference"
+source: "docs/api/authentication.pdf"
+pages: 42
+status: "converted"
+---</pre>
+
+<p>That field is the difference between "the docs say X" and "docs/api/authentication.pdf says X". The second can be verified by opening the original; the first cannot. If you ask an agent to cite the <code>source</code> value alongside its answers, every claim becomes traceable back to a specific PDF.</p>
+
+<h2>Tell the agent what is missing</h2>
+
+<p>The failure mode worth guarding against: a document that did not convert is invisible, and invisible reads as "not relevant" rather than "not available". An agent will answer around the gap without ever flagging it.</p>
+
+<p>The index carries statuses for exactly this reason — <code>no_text</code>, <code>encrypted</code>, <code>skipped_limit</code>. Since the agent reads the index anyway, it can be told to treat those rows as known gaps and say so when a question falls near one.</p>
+
+<h2>Feeding a retrieval pipeline</h2>
+
+<p>If the corpus is being chunked into a vector store rather than read directly, the front matter is the metadata layer: carry <code>source</code> and <code>pages</code> onto each chunk so retrieved passages stay attributable. A retrieval system that returns text without a document identity produces answers nobody can check.</p>
+
+<p>Reconvert before reindexing. A stale index over a fresh corpus is the same silent-drift problem, one layer further from where you would notice it.</p>
+
+<footer>
+<p>PDF Forge does not upload documents or document text. This is a public GitHub Pages page; it receives no document data of any kind.</p>
+</footer>
+
+</body>
+</html>
