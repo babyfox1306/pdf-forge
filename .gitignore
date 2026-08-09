@@ -28,3 +28,9 @@ TEST-SUMMARY.txt
 
 # Local open-source planning docs — NEVER commit or push to GitHub
 docs/opensource-plan/
+
+# Local tidy-up destinations (artifacts / logs / archived extracts)
+build/
+logs/
+archive/
+test/evidence/

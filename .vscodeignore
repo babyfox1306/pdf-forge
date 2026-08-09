@@ -75,4 +75,7 @@ test/**
 !test-fixtures/**
 
 .vsix-docs-check/**
-
+build/**
+logs/**
+archive/**
+test/evidence/**
