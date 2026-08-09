@@ -25,3 +25,6 @@ INSTALL-*.md
 DEBUG-*.md
 TEST-REPORT.md
 TEST-SUMMARY.txt
+
+# Local open-source planning docs — NEVER commit or push to GitHub
+docs/opensource-plan/

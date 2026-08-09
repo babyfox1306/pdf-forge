@@ -1,74 +1,84 @@
 # PDF Forge
 
-> **PDF toolkit for developers: view, extract text/code/tables, export to Markdown, compare PDFs — offline-first, no cloud APIs.**
+> Turn PDF collections into searchable, diffable, source-traceable Markdown that coding agents can use as repository context — fully local. Documents never leave your machine.
 
-[![Version](https://img.shields.io/badge/version-1.0.8-blue.svg)](https://marketplace.visualstudio.com/items?itemName=babyfox1306.pdf-forge)
+[![Version](https://img.shields.io/badge/version-1.0.9-blue.svg)](https://marketplace.visualstudio.com/items?itemName=babyfox1306.pdf-forge)
 [![Install](https://img.shields.io/badge/install-vs--marketplace-brightgreen.svg)](https://marketplace.visualstudio.com/items?itemName=babyfox1306.pdf-forge)
 [![Open VSX](https://img.shields.io/badge/open--vsx-babyfox1306.pdf--forge-blue.svg)](https://open-vsx.org/extension/babyfox1306/pdf-forge)
 
 ## What it does
 
-PDF Forge is a VS Code custom editor for `.pdf` files. It renders pages with bundled **pdf.js** (no CDN), extracts text with **pdf-parse**, and organizes exports under `./pdf-forge-exports/` in your workspace.
+**Core PDF processing is fully local and works offline. Documents never leave your machine.** PDF Forge views PDFs with bundled **pdf.js** (no CDN), extracts text with **pdf-parse**, and — new in **v1.0.9** — batch-converts a folder of PDFs into a Markdown corpus your editor and coding agents can search and diff, with source paths recorded in front matter and the index.
+
+Identity: **`babyfox1306.pdf-forge`** (Marketplace and Open VSX).
+
+### Convert Folder to Markdown (v1.0.9)
+
+Command: **`PDF Forge: Convert Folder to Markdown`**
+
+- Recursively finds `.pdf` files under a workspace folder
+- Writes a source-traceable tree under `<workspace>/pdf-forge-exports/`
+- Maintains `.pdf-forge-manifest.json` (ownership, hashes, statuses) and `INDEX.md`
+- Soft **100-page monthly batch threshold** (whole-file accounting; free regenerations when unchanged). Single-file commands stay unlimited.
+- Safe writes: does not overwrite user-modified or unowned Markdown
+- Conflict candidate (at most one): `document.pdf-forge-new.md`
+- Cancellable; sequential; no Git side effects on the batch path
+- Fully local — documents never leave your machine
+
+**Batch output layout** (example for `docs/api/authentication.pdf`):
+
+```text
+pdf-forge-exports/
+  INDEX.md
+  .pdf-forge-manifest.json
+  docs/api/authentication/document.md
+```
+
+**Legacy single-file export** (unchanged layout):
+
+```text
+pdf-forge-exports/<basename>/<basename>.md
+```
 
 ### PDF Viewer
 - Custom editor with canvas page rendering (pdf.js, bundled offline)
-- Toolbar: zoom +/-, fit page, search, extract, export, **Copy w/ Citation**, sidebar
-- Sidebar tabs: metadata, notes, exports, bookmarks
+- Toolbar: zoom, fit, search, extract, export, **Copy w/ Citation**, sidebar
 - Auto-reload when the PDF file changes on disk
-- Respects VS Code theme colors in the webview UI
-- Configurable max file size (default 200 MB)
-- **Output channel** `PDF Forge` for diagnostics (View → Output)
+- Output channel **PDF Forge** for diagnostics
 
-### Text extraction & export
+### Text extraction & single-file export
 - Extract full document text to `extracted-text.txt`
-- Export to Markdown with YAML front matter (title, source, page count)
-- Export plain text and JSON via settings / export flow
-- Optional Git auto-commit when workspace is a Git repo
+- Export to Markdown with YAML front matter
+- Optional Git auto-commit of the **exact generated file** when `pdf-forge.autoCommit` is enabled (**default: false**)
 
-### Code intelligence
-- Heuristic code-block detection (fonts, indentation, patterns)
-- Language detection via highlight.js
-- Copy all code blocks to clipboard
-- Deduplicate identical blocks
-- Merge blocks into `merged-code-all.md`
-- Per-block files under `code-blocks/` (`.py`, `.js`, etc.)
+### Code intelligence, tables, compare, notes
+- Heuristic code-block detection, dedupe, clipboard copy
+- Tables → CSV / JSON
+- Compare two PDFs (text diff)
+- Notes beside the PDF (`.notes.json`) + Markdown export
 
-### Tables
-- Extract tables to CSV / JSON under `tables/`
-- Opens CSV in VS Code after export
+## Settings
 
-### Compare & metadata
-- **Compare PDFs**: text diff between two PDFs (diff-match-patch)
-- **Show Metadata**: title, author, pages, encryption, fonts, file size
-
-### Search & navigation
-- Command Palette search with optional regex (`PDF Forge: Search in PDF`)
-- In-viewer search via toolbar prompt (plain text)
-- Jump to page (Command Palette)
-- Page bookmarks (stored in workspace state; sidebar list)
-
-### Notes
-- Notes saved to `.notes.json` beside the PDF
-- Export notes to Markdown
-- Notes listed in sidebar (no on-page highlight overlay yet)
-
-### Smart copy
-- Toolbar **Copy w/ Citation** copies visible page text plus `// From: filename.pdf (p.N)`
+| Setting | Default | Meaning |
+|--------|---------|---------|
+| `pdf-forge.autoCommit` | `false` | Commit only the exact single-file export result. Batch never commits. |
+| `pdf-forge.autoReload` | `true` | Reload PDF when it changes on disk |
+| `pdf-forge.maxFileSize` | `200` | Max PDF size in MB (`0` = unlimited) |
+| `pdf-forge.enableOcr` | `false` | Reserved — OCR is **not** active |
 
 ## Not in this version
 
-These are **not** shipped or are incomplete — do not expect them today:
+| Topic | Reality |
+|-------|---------|
+| OCR / scanned PDFs | Not available (no OCR engine ships; image-only PDFs get `no_text` in batch) |
+| MCP / CLI / CI / watch mode | Not shipped |
+| Payment / Pro / licensing UI | Not shipped |
+| Telemetry / install ID / fingerprints | Not shipped |
+| Hidden network / document upload | Not shipped |
 
-| Claim (old docs) | Reality in v1.0.8 |
-|---|---|
-| OCR / scanned PDFs | **Not available** — setting reserved for a future release |
-| Markdown → PDF | **Removed** — export is PDF → text/Markdown only |
-| Selectable text overlay on pages | **No** — viewer is canvas; copy via commands/toolbar |
-| Monaco code preview | **No** |
-| Visual search highlights on PDF | **Partial** — search runs on extracted text; no text-layer overlay |
-| Split view text panel | **Shell only** — toggles layout; panel is not auto-filled with page text |
-| Floating quick-export panel | **No** — use Command Palette / toolbar |
-| On-page note/highlight overlays | **No** — notes are file-based + sidebar list |
+## Privacy
+
+PDF processing is fully local. PDF Forge does not upload documents or document text and makes no background network requests. If you explicitly choose to open the batch guide, your browser visits a public GitHub Pages URL.
 
 ## Installation
 
@@ -78,94 +88,20 @@ These are **not** shipped or are incomplete — do not expect them today:
 3. Install **`babyfox1306.pdf-forge`**
 
 ### Open VSX (VSCodium and forks)
-Install **`babyfox1306.pdf-forge`**: https://open-vsx.org/extension/babyfox1306/pdf-forge
+Install **`babyfox1306.pdf-forge`** from [Open VSX](https://open-vsx.org/extension/babyfox1306/pdf-forge).
 
-> Uninstall **`babyfox1306-dev.pdf-forge`** if you have it — that is an old duplicate listing.
+### From VSIX
+`Extensions: Install from VSIX…` and select the packaged `.vsix`.
 
-### From `.vsix`
-```bash
-code --install-extension pdf-forge-1.0.8.vsix
-```
+## Commands (selection)
 
-## Usage
+- `PDF Forge: Convert Folder to Markdown`
+- `PDF Forge: Export to Markdown`
+- `PDF Forge: Extract All Text`
+- `PDF Forge: Open Export Folder`
+- `PDF Forge: Compare PDFs`
+- `PDF Forge: Show Metadata`
 
-### Open a PDF
-- Explorer → right-click `.pdf` → **Open With…** → **PDF Forge Viewer**
-- Or Command Palette → `PDF Forge: Open PDF`
+## License
 
-### Common commands
-
-| Shortcut | Command |
-|---|---|
-| `Ctrl+Alt+Z` | Zoom menu |
-| `Ctrl+Alt+X` | Extract all text |
-| `Ctrl+Alt+C` | Copy all code blocks |
-| `Ctrl+Alt+E` | Export to Markdown |
-| `Ctrl+Alt+S` | Toggle split view (layout) |
-| `Ctrl+Alt+F` | Search in PDF (regex optional) |
-
-All commands: Command Palette (`Ctrl+Shift+P`) → type `PDF Forge`.
-
-## Configuration
-
-```json
-{
-  "pdf-forge.autoReload": true,
-  "pdf-forge.defaultFormat": "markdown",
-  "pdf-forge.highlightColor": "#FFEB3B",
-  "pdf-forge.maxFileSize": 200,
-  "pdf-forge.autoDedupe": true,
-  "pdf-forge.enableOcr": false
-}
-```
-
-- `enableOcr` — reserved; OCR is **not active** in this release.
-
-## Export layout
-
-```
-./pdf-forge-exports/
-  └── [filename]/
-      ├── extracted-text.txt
-      ├── document.md
-      ├── code-blocks/
-      ├── tables/
-      ├── notes.md
-      └── metadata.json
-```
-
-## Requirements
-
-- VS Code **1.80.0+**
-- PDFs with a **text layer** (born-digital or OCR’d elsewhere)
-- Workspace folder for exports (uses first workspace root)
-
-## Limitations
-
-- View-only — no PDF editing
-- Scanned/image-only PDFs cannot be extracted until OCR ships
-- Very large files (>500 MB) may be slow
-- Split view does not yet mirror live page text in the side panel
-
-## FAQ
-
-**Is it free?** Yes — MIT license.
-
-**Does it need internet?** No for normal use. pdf.js is bundled in the extension.
-
-**Can I edit PDFs?** No.
-
-**How do I debug issues?** Open **View → Output → PDF Forge**.
-
-## Publisher
-
-- [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=babyfox1306.pdf-forge) — `babyfox1306.pdf-forge`
-- [Open VSX](https://open-vsx.org/extension/babyfox1306/pdf-forge) — `babyfox1306.pdf-forge`
-
-Issues: [GitHub](https://github.com/babyfox1306/pdf-forge)
-
-## Credits
-
-- [pdf.js](https://mozilla.github.io/pdf.js/) (Mozilla)
-- [highlight.js](https://highlightjs.org/)
-- [diff-match-patch](https://github.com/google/diff-match-patch)
+See [LICENSE](LICENSE).
