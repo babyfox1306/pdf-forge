@@ -1,5 +1,7 @@
 # PDF Forge
 
+[![Open VSX](https://img.shields.io/open-vsx/dt/babyfox1306/pdf-forge?label=Open%20VSX%20downloads)](https://open-vsx.org/extension/babyfox1306/pdf-forge) [![Marketplace](https://img.shields.io/visual-studio-marketplace/i/babyfox1306.pdf-forge?label=VS%20Code%20installs)](https://marketplace.visualstudio.com/items?itemName=babyfox1306.pdf-forge) [![No telemetry](https://img.shields.io/badge/telemetry-none-brightgreen)](#privacy)
+
 > Turn PDF collections into searchable, diffable, source-traceable Markdown that coding agents can use as repository context — fully local. Documents never leave your machine.
 
 [![Version](https://img.shields.io/badge/version-1.0.9-blue.svg)](https://marketplace.visualstudio.com/items?itemName=babyfox1306.pdf-forge)
